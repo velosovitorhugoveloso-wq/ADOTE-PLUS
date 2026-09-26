@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adote+ | Adoção Responsável & Sistema Integrado Fullstack</title>
+<style>
+  :root {
+    --green: #2f6d4d;
+    --dark: #1e2a22;
+    --soft: #eef5ef;
+    --line: #dce5dd;
+    --muted: #68736b;
+    --white: #ffffff;
+    --admin: #8b3a3a;
+    --admin-soft: #fbf0f0;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Segoe UI', Inter, Arial, sans-serif; background: #f7f9f7; color: var(--dark); line-height: 1.5; }
+
+  /* CABEÇALHO E NAVEGAÇÃO */
+  header { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); padding: 13px 5%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .logo { font-size: 25px; font-weight: 900; text-decoration: none; color: var(--dark); }
+  .logo span { color: var(--green); }
+  nav { display: flex; align-items: center; gap: 16px; }
+  nav a { color: var(--dark); text-decoration: none; font-weight: 700; font-size: 14px; }
+  button, .btn { border: 0; border-radius: 11px; padding: 11px 16px; font-weight: 800; cursor: pointer; font-size: 14px; transition: 0.2s; }
+  .primary { background: var(--green); color: #fff; }
+  .primary:hover { opacity: 0.92; }
+  .secondary { background: #e8f0ea; color: var(--green); }
+  .danger { background: #fae7e7; color: #a33737; }
+
+  /* HERO / BANNER PRINCIPAL */
+  .hero { background: linear-gradient(120deg, #e3f1e5, #f7f9f7); padding: 50px 5%; display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; }
+  .eyebrow { font-size: 12px; font-weight: 900; letter-spacing: .08em; color: var(--green); text-transform: uppercase; }
+  .hero h1 { font-size: clamp(36px, 5vw, 64px); line-height: 1.02; margin: 10px 0; }
+  .hero h1 span { color: var(--green); }
+  .hero p { max-width: 640px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+  .hero-images { display: grid; grid-template-columns: 1.3fr .7fr; grid-template-rows: 1fr 1fr; gap: 12px; }
+  .hero-images img { width: 100%; height: 100%; object-fit: cover; border-radius: 22px; }
+  .hero-images img:first-child { grid-row: 1/3; }
+
+  /* CONTAINER E ESTRUTURA */
+  .wrap { max-width: 1180px; margin: auto; padding: 40px 5%; }
+  h2 { font-size: 30px; margin: 6px 0 12px; }
+  .muted { color: var(--muted); }
+
+  /* PAINEL DE ADMINISTRAÇÃO */
+  .admin-badge { background: var(--admin); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+  .admin-section { background: var(--admin-soft); border: 2px dashed var(--admin); border-radius: 16px; padding: 25px; margin-bottom: 30px; display: none; }
+
+  /* CATEGORIAS */
+  .categories { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .cat { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 15px; text-align: center; font-weight: 800; cursor: pointer; transition: 0.2s; }
+  .cat:hover { transform: translateY(-3px); border-color: var(--green); }
+  .cat b { display: block; font-size: 34px; margin-bottom: 6px; }
+
+  /* FILTROS E BUSCA */
+  .filters { background: #fff; border: 1px solid var(--line); border-radius: 17px; padding: 16px; display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 9px; margin: 20px 0; }
+  input, select, textarea { width: 100%; padding: 11px; border: 1px solid #ccd8ce; border-radius: 10px; font: inherit; background: #fff; }
+
+  /* CARDS E GRIDS DE ANIMAIS */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 17px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 17px; overflow: hidden; box-shadow: 0 8px 22px #00000009; }
+  .card img { width: 100%; height: 190px; object-fit: cover; }
+  .body { padding: 15px; }
+  .tag { display: inline-block; background: #e8f1e9; color: var(--green); border-radius: 20px; padding: 5px 10px; font-size: 11px; font-weight: 900; }
+  .body h3 { margin: 8px 0 5px; }
+  .actions { display: flex; gap: 7px; margin-top: 13px; }
+  .actions .primary { flex: 1; }
+  .heart { padding: 10px 12px; }
+
+  /* PASSO A PASSO E HISTÓRIA */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+  .step { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .step img { width: 100%; height: 145px; object-fit: cover; }
+  .step div { padding: 17px; }
+  .num { display: inline-grid; place-items: center; width: 32px; height: 32px; background: var(--green); color: white; border-radius: 50%; font-weight: 900; }
+  .story { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; }
+  .story img { width: 100%; height: 360px; object-fit: cover; border-radius: 25px; }
+  .check { display: flex; gap: 10px; margin: 13px 0; }
+  .check b { color: var(--green); }
+
+  /* ONGS */
+  .ong-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+  .ong { background: #fff; border: 1px solid var(--line); border-radius: 17px; overflow: hidden; }
+  .ong img { width: 100%; height: 150px; object-fit: cover; }
+  .ong div { padding: 17px; }
+  .pill { display: inline-block; padding: 5px 9px; border-radius: 20px; background: #eef5ef; color: var(--green); font-size: 11px; font-weight: 800; }
+
+  /* DASHBOARD E STATS */
+  .dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .dash { background: #fff; border: 1px solid var(--line); padding: 20px; border-radius: 16px; }
+  .dash strong { font-size: 30px; color: var(--green); display: block; }
+  .cta { background: var(--green); color: #fff; border-radius: 22px; padding: 28px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+  .cta h2 { margin: 0; color: white; }
+
+  /* TABELAS ADMIN */
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; }
+  th, td { padding: 12px; border: 1px solid var(--line); text-align: left; font-size: 13px; }
+  th { background: var(--soft); color: var(--green); }
+
+  /* FOOTER */
+  footer { background: #1e2a22; color: #dbe7de; text-align: center; padding: 38px 5%; margin-top: 30px; }
+
+  /* MODAL E TOAST */
+  .modal { display: none; position: fixed; inset: 0; background: #0008; z-index: 50; align-items: center; justify-content: center; padding: 18px; }
+  .modal.show { display: flex; }
+  .modalbox { background: #fff; border-radius: 20px; width: min(620px, 100%); max-height: 90vh; overflow: auto; padding: 25px; position: relative; }
+  .close { position: absolute; top: 15px; right: 20px; background: none; font-size: 27px; padding: 0; cursor: pointer; border: 0; }
+  .toast { display: none; position: fixed; right: 18px; bottom: 18px; background: #202a22; color: #fff; padding: 14px 18px; border-radius: 11px; z-index: 70; }
+  .userbar { display: none; align-items: center; gap: 9px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--soft); color: var(--green); font-weight: 900; }
+  .empty { padding: 30px; background: #fff; border: 1px dashed var(--line); border-radius: 15px; color: var(--muted); text-align: center; grid-column: 1 / -1; }
+
+  /* RESPONSIVIDADE */
+  @media(max-width:980px){ .grid { grid-template-columns: repeat(2,1fr); } .categories { grid-template-columns: repeat(3,1fr); } .filters { grid-template-columns: 1fr 1fr 1fr; } .steps, .ong-grid { grid-template-columns: 1fr 1fr; } .hero { grid-template-columns: 1fr; } }
+  @media(max-width:600px){ nav a { display:none; } .grid, .ong-grid, .steps, .dashboard { grid-template-columns: 1fr; } .categories { grid-template-columns: repeat(2,1fr); } .filters { grid-template-columns: 1fr; } .story { grid-template-columns: 1fr; } .hero-images { min-height:220px; } .cta { display:block; } .cta button { margin-top:15px; } }
+
+/* ===== ADOTE+ PROFISSIONAL — NOVOS COMPONENTES ===== */
+.pro-section{padding:72px 5%;max-width:1200px;margin:auto}
+.pro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pro-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 10px 30px rgba(30,42,34,.05);transition:.2s}
+.pro-card:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(30,42,34,.09)}
+.pro-icon{width:50px;height:50px;border-radius:14px;background:var(--soft);display:grid;place-items:center;font-size:25px;margin-bottom:14px}
+.pro-card h3{margin:5px 0 8px}
+.pro-card p{margin:0 0 15px}
+.trust{background:linear-gradient(135deg,#edf6ef,#fff);border:1px solid var(--line);border-radius:24px;padding:30px;display:grid;grid-template-columns:1.2fr 2fr;gap:25px;align-items:center}
+.trust-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.trust-item{background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px;font-weight:700}
+.quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.quote{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}
+.quote .stars{letter-spacing:2px}
+.faq{border:1px solid var(--line);background:#fff;border-radius:13px;margin:10px 0;overflow:hidden}
+.faq button{width:100%;background:#fff;text-align:left;border-radius:0;padding:17px;font-size:15px;display:flex;justify-content:space-between}
+.faq-answer{display:none;padding:0 17px 17px;color:var(--muted)}
+.faq.open .faq-answer{display:block}
+.progress-wrap{height:10px;background:#e8eee9;border-radius:20px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:var(--green);transition:.25s}
+.checklist label{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px;margin:8px 0;font-weight:600}
+.checklist input{width:auto;margin-top:4px}
+.extra-modal{display:none;position:fixed;inset:0;background:rgba(15,25,19,.62);z-index:100;align-items:center;justify-content:center;padding:18px}
+.extra-modal.show{display:flex}
+.extra-box{background:#f7f9f7;width:min(720px,100%);max-height:90vh;overflow:auto;border-radius:22px;padding:28px;position:relative;box-shadow:0 25px 80px rgba(0,0,0,.25)}
+.extra-close{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:28px;cursor:pointer}
+.quiz-result{display:none;background:var(--soft);border-radius:15px;padding:18px;margin-top:15px}
+.share-row{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:850px){.pro-grid,.quote-grid{grid-template-columns:1fr 1fr}.trust{grid-template-columns:1fr}}
+@media(max-width:560px){.pro-grid,.quote-grid,.trust-list{grid-template-columns:1fr}.pro-section{padding:50px 5%}}
+
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">🐾 Adote<span>+</span></a>
+  <nav>
+    <a href="#animais">Animais</a>
+    <a href="#como">Como funciona</a>
+    <a href="#ongs">ONGs</a>
+    <a href="#sobre">Sobre</a>
+    <button id="loginBtn" class="secondary" onclick="abrirConta()">Entrar</button>
+    <div id="userbar" class="userbar">
+      <span id="adminBadge" class="admin-badge" style="display:none;">PAINEL ADMIN</span>
+      <div class="avatar" id="avatar">U</div>
+      <button class="secondary" onclick="abrirPainel()">Minha Conta</button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow">ADOÇÃO RESPONSÁVEL • CONECTANDO VIDAS</div>
+    <h1>Um lar pode mudar <span>duas vidas.</span></h1>
+    <p>Encontre cães, gatos, cavalos, tartarugas, coelhos e aves. Crie sua conta, favorite animais, envie pedidos de adoção e acompanhe tudo pelo seu painel.</p>
+    <div style="display:flex; gap:10px; margin-top:15px;">
+      <a class="btn primary" href="#animais">🔎 Encontrar um animal</a>
+      <button class="btn secondary" onclick="abrirConta()">Criar minha conta</button>
+    </div>
+  </div>
+  <div class="hero-images">
+    <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=900&q=85" alt="Cachorro">
+    <img src="https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=600&q=85" alt="Gato">
+    <img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=600&q=85" alt="Cavalo">
+  </div>
+</section>
+
+<div class="wrap">
+
+  <div id="adminArea" class="admin-section">
+    <h2 style="color:var(--admin); margin-top:0;">⚙️ Painel de Controle do Administrador</h2>
+    <p style="font-size:14px; margin-bottom:15px;">Como administrador, você pode publicar novos pets no catálogo e gerenciar os pedidos de adoção dos usuários.</p>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <button class="primary" onclick="abrirFormAnimal()">+ Cadastrar Novo Animal</button>
+      <button class="secondary" onclick="carregarPedidosAdmin()">📋 Gerenciar Pedidos de Adoção</button>
+    </div>
+    <div id="adminConteudo"></div>
+  </div>
+
+  <div class="eyebrow">EXPLORE</div>
+  <h2>Escolha o tipo de animal</h2>
+  <div class="categories">
+    <div class="cat" onclick="categoria('Cão')"><b>🐶</b>Cães</div>
+    <div class="cat" onclick="categoria('Gato')"><b>🐱</b>Gatos</div>
+    <div class="cat" onclick="categoria('Cavalo')"><b>🐴</b>Cavalos</div>
+    <div class="cat" onclick="categoria('Tartaruga')"><b>🐢</b>Tartarugas</div>
+    <div class="cat" onclick="categoria('Coelho')"><b>🐰</b>Coelhos</div>
+    <div class="cat" onclick="categoria('Ave')"><b>🦜</b>Aves</div>
+  </div>
+
+  <div style="margin-top: 50px;" id="animais"></div>
+  <div class="eyebrow">CATÁLOGO</div>
+  <h2>Animais esperando uma família</h2>
+
+  <div class="filters">
+    <input id="busca" placeholder="🔎 Nome, raça ou cidade" oninput="render()">
+    <select id="especie" onchange="render()">
+      <option value="">Todas as espécies</option>
+      <option>Cão</option><option>Gato</option><option>Cavalo</option>
+      <option>Tartaruga</option><option>Coelho</option><option>Ave</option>
+    </select>
+    <select id="porte" onchange="render()">
+      <option value="">Todos os portes</option>
+      <option>Pequeno</option><option>Médio</option><option>Grande</option>
+    </select>
+    <select id="sexo" onchange="render()">
+      <option value="">Todos os sexos</option>
+      <option>Macho</option><option>Fêmea</option>
+    </select>
+    <select id="ordem" onchange="render()">
+      <option value="">Mais recentes</option>
+      <option value="nome">Nome A-Z</option>
+      <option value="idade">Mais jovens</option>
+    </select>
+  </div>
+
+  <div id="contador" class="muted"></div><br>
+  <div id="grid" class="grid"></div>
+
+  <div style="margin-top: 60px;" id="como"></div>
+  <div class="eyebrow">PASSO A PASSO</div>
+  <h2>Como funciona a adoção?</h2>
+  <p class="muted">Criamos uma experiência simples, visual e transparente para você entender cada etapa.</p>
+
+  <div class="steps">
+    <div class="step">
+      <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=700&q=80" alt="Encontre">
+      <div><span class="num">1</span><h3>Encontre</h3><p class="muted">Pesquise por espécie, porte, sexo, cidade ou nome.</p></div>
+    </div>
+    <div class="step">
+      <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=700&q=80" alt="Conheça">
+      <div><span class="num">2</span><h3>Conheça</h3><p class="muted">Abra os detalhes, veja fotos e confira as informações.</p></div>
+    </div>
+    <div class="step">
+      <img src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=700&q=80" alt="Solicite">
+      <div><span class="num">3</span><h3>Solicite</h3><p class="muted">Envie seus dados e conte por que quer adotar.</p></div>
+    </div>
+    <div class="step">
+      <img src="https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?auto=format&fit=crop&w=700&q=80" alt="Acompanhe">
+      <div><span class="num">4</span><h3>Acompanhe</h3><p class="muted">Entre na sua conta e veja o andamento dos pedidos.</p></div>
+    </div>
+  </div>
+
+  <br><br>
+
+  <div class="story">
+    <img src="https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1000&q=85" alt="Pessoa com cachorro">
+    <div>
+      <div class="eyebrow">UMA JORNADA COMPLETA</div>
+      <h2>Da descoberta ao novo lar ❤️</h2>
+      <div class="check">✓ <span><b>Perfil do animal:</b> informações organizadas para uma decisão consciente.</span></div>
+      <div class="check">✓ <span><b>Pedido de adoção:</b> formulário rápido e fácil.</span></div>
+      <div class="check">✓ <span><b>Acompanhamento:</b> veja seus pedidos dentro da conta.</span></div>
+      <div class="check">✓ <span><b>ONGs:</b> conheça quem cuida dos animais e veja seus perfis.</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top: 60px;" id="ongs"></div>
+  <div class="eyebrow">REDE DE PARCEIROS</div>
+  <h2>ONGs cadastradas</h2>
+  <p class="muted">Estas são organizações parceiras cadastradas no ecossistema de adoção.</p>
+  <div id="ongGrid" class="ong-grid"></div>
+
+  <div style="margin-top: 60px;" id="sobre"></div>
+  <div class="dashboard">
+    <div class="dash"><strong id="totalAnimais">14</strong>animais no catálogo</div>
+    <div class="dash"><strong>6</strong>ONGs parceiras</div>
+    <div class="dash"><strong id="totalFavoritos">0</strong>favoritos salvos</div>
+  </div>
+
+  <br>
+
+  <div class="cta">
+    <div>
+      <h2>Quer ajudar um animal?</h2>
+      <p style="margin:5px 0 0 0;">Crie sua conta e comece a explorar as adoções.</p>
+    </div>
+    <button class="btn secondary" onclick="abrirConta()">Criar conta grátis</button>
+  </div>
+
+</div>
+
+
+
+<section class="pro-section" id="experiencia">
+  <div class="eyebrow">EXPERIÊNCIA ADOTE+</div>
+  <h2>Mais segurança para quem adota</h2>
+  <p class="muted">Novos recursos para transformar o site em uma plataforma mais completa, organizada e profissional.</p>
+
+  <div class="pro-grid" style="margin-top:24px">
+    <article class="pro-card">
+      <div class="pro-icon">🎯</div>
+      <h3>Compatibilidade</h3>
+      <p class="muted">Descubra qual perfil de animal combina melhor com sua rotina.</p>
+      <button class="btn primary" onclick="mostrarExtra('quizModal')">Fazer teste</button>
+    </article>
+    <article class="pro-card">
+      <div class="pro-icon">✅</div>
+      <h3>Checklist de adoção</h3>
+      <p class="muted">Confira os principais pontos antes de assumir uma adoção.</p>
+      <button class="btn secondary" onclick="mostrarExtra('checkModal')">Abrir checklist</button>
+    </article>
+    <article class="pro-card">
+      <div class="pro-icon">❓</div>
+      <h3>Central de dúvidas</h3>
+      <p class="muted">Respostas rápidas para as perguntas mais comuns de quem adota.</p>
+      <button class="btn secondary" onclick="mostrarExtra('faqModal')">Ver perguntas</button>
+    </article>
+  </div>
+
+  <div class="trust" style="margin-top:22px">
+    <div>
+      <div class="eyebrow">CONFIANÇA</div>
+      <h2 style="margin-top:8px">Informação antes da decisão.</h2>
+      <p class="muted">O objetivo do Adote+ é facilitar uma adoção consciente, com informações claras sobre o animal e acompanhamento do processo.</p>
+    </div>
+    <div class="trust-list">
+      <div class="trust-item">🐾 Perfil do animal</div>
+      <div class="trust-item">📋 Processo acompanhado</div>
+      <div class="trust-item">🏢 Perfil da ONG</div>
+      <div class="trust-item">❤️ Adoção responsável</div>
+    </div>
+  </div>
+</section>
+
+<section class="pro-section" style="background:#eef5ef;max-width:none">
+  <div style="max-width:1200px;margin:auto">
+    <div class="eyebrow">HISTÓRIAS</div>
+    <h2>Quem encontrou um novo começo</h2>
+    <div class="quote-grid">
+      <article class="quote"><div class="stars">★★★★★</div><p>“Foi muito fácil encontrar um animal que combinava com nossa rotina. As informações ajudaram bastante.”</p><b>Mariana • Família adotante</b></article>
+      <article class="quote"><div class="stars">★★★★★</div><p>“A organização dos pedidos facilita muito o trabalho da ONG e deixa o processo mais transparente.”</p><b>Equipe de ONG parceira</b></article>
+      <article class="quote"><div class="stars">★★★★★</div><p>“Gostei de poder favoritar animais e voltar depois para decidir com calma.”</p><b>Lucas • Usuário</b></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="novos-recursos">
+  <span class="tag">NOVOS RECURSOS</span>
+  <h2>Mais formas de participar</h2>
+  <div class="features">
+    <div class="feature">
+      <div style="font-size:32px">📋</div>
+      <h3>Acompanhar adoção</h3>
+      <p class="muted">Consulte o andamento das suas solicitações e veja cada etapa do processo.</p>
+      <button class="btn light" onclick="openM('statusAdocao')">Ver minhas solicitações</button>
+    </div>
+    <div class="feature">
+      <div style="font-size:32px">🤝</div>
+      <h3>Apoiar uma ONG</h3>
+      <p class="muted">Além da adoção, você pode contribuir para ajudar os animais que ainda estão esperando.</p>
+      <button class="btn light" onclick="openM('apoioOng')">Quero apoiar</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  🐾 <b>Adote+</b> — Projeto demonstrativo de adoção responsável.<br>
+  <small>Os animais, ONGs e dados exibidos neste projeto são para fins de teste e apresentação técnica.</small>
+</footer>
+
+<div id="modal" class="modal" onclick="if(event.target===this)fechar()">
+  <div class="modalbox">
+    <button class="close" onclick="fechar()">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// BASE DE DADOS COM FOTOS DE TARTARUGAS CORRIGIDAS PARA TECA, NINJA, CASCO E VERDINHA
+let animais = [
+  {id:1,nome:"Luna",esp:"Cão",raca:"SRD",idade:2,txt:"2 anos",porte:"Médio",sexo:"Fêmea",cidade:"Betim",ong:"Amigos de Quatro Patas",img:"https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=900&q=85"},
+  {id:2,nome:"Mingau",esp:"Gato",raca:"SRD",idade:1,txt:"1 ano",porte:"Pequeno",sexo:"Macho",cidade:"Betim",ong:"Lar de Patas",img:"https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=900&q=85"},
+  {id:3,nome:"Thor",esp:"Cão",raca:"Labrador",idade:3,txt:"3 anos",porte:"Grande",sexo:"Macho",cidade:"Contagem",ong:"Amigos de Quatro Patas",img:"https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=85"},
+  {id:4,nome:"Mel",esp:"Cão",raca:"SRD",idade:.7,txt:"8 meses",porte:"Pequeno",sexo:"Fêmea",cidade:"Betim",ong:"Novo Lar Animal",img:"https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=900&q=85"},
+  {id:5,nome:"Nina",esp:"Gato",raca:"SRD",idade:2,txt:"2 anos",porte:"Pequeno",sexo:"Fêmea",cidade:"Contagem",ong:"Lar de Patas",img:"https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=900&q=85"},
+  {id:6,nome:"Max",esp:"Cão",raca:"SRD",idade:4,txt:"4 anos",porte:"Grande",sexo:"Macho",cidade:"Betim",ong:"Novo Lar Animal",img:"https://images.unsplash.com/photo-1583511655826-05700d52f4d9?auto=format&fit=crop&w=900&q=85"},
+  {id:7,nome:"Estrela",esp:"Cavalo",raca:"Quarto de Milha",idade:6,txt:"6 anos",porte:"Grande",sexo:"Fêmea",cidade:"Ibirité",ong:"Projeto Patas Livres",img:"https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=900&q=85"},
+  {id:8,nome:"Trovão",esp:"Cavalo",raca:"Mangalarga",idade:8,txt:"8 anos",porte:"Grande",sexo:"Macho",cidade:"Betim",ong:"Projeto Patas Livres",img:"https://images.unsplash.com/photo-1551884831-bbf3cdc6469e?auto=format&fit=crop&w=900&q=85"},
+  {id:9,nome:"Casco",esp:"Tartaruga",raca:"Tigre-d'água",idade:5,txt:"5 anos",porte:"Pequeno",sexo:"Macho",cidade:"Contagem",ong:"Vida Verde",img:"https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=900&q=85"},
+  {id:10,nome:"Teca",esp:"Tartaruga",raca:"Tigre-d'água",idade:4,txt:"4 anos",porte:"Pequeno",sexo:"Fêmea",cidade:"Betim",ong:"Vida Verde",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Red-eared_Slider_(Trachemys_scripta_elegans).jpg"},
+  {id:11,nome:"Ninja",esp:"Tartaruga",raca:"Jabuti-piranga",idade:3,txt:"3 anos",porte:"Pequeno",sexo:"Macho",cidade:"Betim",ong:"Vida Verde",img:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Red_footed_tortoise_Image_006.jpg"},
+  {id:12,nome:"Verdinha",esp:"Tartaruga",raca:"Tigre-d'água",idade:2,txt:"2 anos",porte:"Pequeno",sexo:"Fêmea",cidade:"Contagem",ong:"Vida Verde",img:"https://images.unsplash.com/photo-1518467166778-b88f373ffec7?auto=format&fit=crop&w=900&q=85"},
+  {id:13,nome:"Pipoca",esp:"Coelho",raca:"Mini Lop",idade:1,txt:"1 ano",porte:"Pequeno",sexo:"Fêmea",cidade:"Betim",ong:"Cantinho dos Bichos",img:"https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=900&q=85"},
+  {id:14,nome:"Loro",esp:"Ave",raca:"Calopsita",idade:2,txt:"2 anos",porte:"Pequeno",sexo:"Macho",cidade:"Contagem",ong:"Asas do Bem",img:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=900&q=85"}
+];
+
+// ONGS CADASTRADAS
+const ongs = [
+  ["Amigos de Quatro Patas","Betim - MG","🐾","Cães e gatos","https://images.unsplash.com/photo-1601758125946-6ec2ef64daf8?auto=format&fit=crop&w=800&q=80"],
+  ["Lar de Patas","Contagem - MG","🏠","Gatos e cães","https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80"],
+  ["Novo Lar Animal","Betim - MG","❤️","Resgate animal","https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=800&q=80"],
+  ["Projeto Patas Livres","Ibirité - MG","🐴","Cavalos","https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=800&q=80"],
+  ["Vida Verde","Betim - MG","🐢","Animais silvestres autorizados","https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=800&q=80"],
+  ["Cantinho dos Bichos","Contagem - MG","🐰","Pequenos animais","https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=800&q=80"]
+];
+
+let favoritos = JSON.parse(localStorage.getItem("ap_fav") || "[]");
+let conta = JSON.parse(localStorage.getItem("ap_conta") || "null");
+let pedidos = JSON.parse(localStorage.getItem("ap_pedidos") || "[]");
+
+function render() {
+  const q = document.getElementById("busca").value.toLowerCase();
+  const e = document.getElementById("especie").value;
+  const p = document.getElementById("porte").value;
+  const s = document.getElementById("sexo").value;
+  const o = document.getElementById("ordem").value;
+
+  let list = animais.filter(a => 
+    (!q || [a.nome, a.raca, a.cidade, a.esp].join(" ").toLowerCase().includes(q)) &&
+    (!e || a.esp === e) && (!p || a.porte === p) && (!s || a.sexo === s)
+  );
+
+  if (o === "nome") list.sort((a,b) => a.nome.localeCompare(b.nome));
+  if (o === "idade") list.sort((a,b) => a.idade - b.idade);
+
+  document.getElementById("contador").textContent = list.length + " animal(is) encontrado(s)";
+  document.getElementById("totalAnimais").textContent = animais.length;
+
+  document.getElementById("grid").innerHTML = list.length ? list.map(a => `
+    <article class="card">
+      <img src="${a.img}" alt="${a.nome}">
+      <div class="body">
+        <span class="tag">${a.esp}</span>
+        <h3>${a.nome}</h3>
+        <div class="muted">
+          ${a.raca} • ${a.txt} • ${a.porte}<br>
+          📍 ${a.cidade} • ${a.sexo}<br>
+          🏠 ${a.ong}
+        </div>
+        <div class="actions">
+          <button class="primary" onclick="adotar(${a.id})">Quero adotar</button>
+          <button class="secondary heart" onclick="favoritar(${a.id})">${favoritos.includes(a.id) ? "♥" : "♡"}</button>
+          <button class="secondary heart" onclick="detalhes(${a.id})">👁</button>
+          ${conta && conta.tipo === 'Administrador' ? `<button class="danger heart" onclick="deletarAnimal(${a.id})" title="Excluir Animal">🗑️</button>` : ''}
+        </div>
+      </div>
+    </article>
+  `).join("") : `<div class="empty">Nenhum animal combina com sua busca. Tente mudar os filtros.</div>`;
+
+  document.getElementById("totalFavoritos").textContent = favoritos.length;
+}
+
+function renderONGs() {
+  document.getElementById("ongGrid").innerHTML = ongs.map((o,i) => `
+    <article class="ong">
+      <img src="${o[4]}" alt="${o[0]}">
+      <div>
+        <span class="pill">${o[2]} ONG parceira</span>
+        <h3>${o[0]}</h3>
+        <p class="muted">📍 ${o[1]}<br>🐾 ${o[3]}</p>
+        <button class="secondary" onclick="verONG(${i})">Ver perfil</button>
+      </div>
+    </article>
+  `).join("");
+}
+
+function categoria(x) {
+  document.getElementById("especie").value = x;
+  document.getElementById("animais").scrollIntoView();
+  render();
+}
+
+function favoritar(id) {
+  if (!conta) {
+    toast("Crie uma conta para salvar favoritos.");
+    abrirConta();
+    return;
+  }
+  favoritos = favoritos.includes(id) ? favoritos.filter(x => x !== id) : [...favoritos, id];
+  localStorage.setItem("ap_fav", JSON.stringify(favoritos));
+  render();
+  toast("Favoritos atualizados!");
+}
+
+function detalhes(id) {
+  let a = animais.find(x => x.id === id);
+  abrir(`
+    <h2>${a.nome} ${icone(a.esp)}</h2>
+    <img src="${a.img}" style="width:100%;height:260px;object-fit:cover;border-radius:15px">
+    <p>
+      <b>Espécie:</b> ${a.esp}<br>
+      <b>Raça:</b> ${a.raca}<br>
+      <b>Idade:</b> ${a.txt}<br>
+      <b>Porte:</b> ${a.porte}<br>
+      <b>Sexo:</b> ${a.sexo}<br>
+      <b>Cidade:</b> ${a.cidade}<br>
+      <b>ONG responsável:</b> ${a.ong}
+    </p>
+    <button class="primary" onclick="adotar(${a.id})">Quero solicitar adoção</button>
+  `);
+}
+
+function icone(e) {
+  return {Cão:"🐶", Gato:"🐱", Cavalo:"🐴", Tartaruga:"🐢", Coelho:"🐰", Ave:"🦜"}[e] || "🐾";
+}
+
+function adotar(id) {
+  if (!conta) {
+    toast("Você precisa de uma conta para solicitar adoção.");
+    abrirConta();
+    return;
+  }
+  let a = animais.find(x => x.id === id);
+  abrir(`
+    <h2>Solicitar adoção: ${a.nome}</h2>
+    <p class="muted">Preencha os dados. Seu pedido será enviado para análise do administrador.</p>
+    <input id="pTel" placeholder="Seu Telefone / WhatsApp"><br><br>
+    <textarea id="pMsg" rows="4" placeholder="Conte por que deseja adotar e como será o lar do animal."></textarea><br><br>
+    <button class="primary" onclick="enviarPedido(${id})">Enviar Pedido</button>
+  `);
+}
+
+function enviarPedido(id) {
+  const tel = document.getElementById("pTel").value;
+  const msg = document.getElementById("pMsg").value;
+  if (!tel || !msg) {
+    alert("Preencha o telefone e a mensagem.");
+    return;
+  }
+  const a = animais.find(x => x.id === id);
+  pedidos.push({
+    id: pedidos.length + 1,
+    usuarioId: conta.id,
+    adotante: conta.nome,
+    email: conta.email,
+    animalId: id,
+    animalNome: a.nome,
+    telefone: tel,
+    mensagem: msg,
+    status: "Em análise"
+  });
+  localStorage.setItem("ap_pedidos", JSON.stringify(pedidos));
+  fechar();
+  toast("Pedido enviado! Acompanhe no seu painel.");
+}
+
+function abrirConta() {
+  abrir(`
+    <h2 style="margin-top:0">Acessar Plataforma</h2>
+    <div style="display:flex; gap:10px; margin-bottom:15px">
+      <button class="primary" style="flex:1" onclick="formLogin()">Entrar</button>
+      <button class="secondary" style="flex:1" onclick="formCadastro()">Criar Conta</button>
+    </div>
+    <div id="contaForm"></div>
+  `);
+  formLogin();
+}
+
+function formLogin() {
+  document.getElementById("contaForm").innerHTML = `
+    <input id="emailLogin" placeholder="Seu E-mail" style="margin-bottom:10px">
+    <input id="senhaLogin" type="password" placeholder="Senha" style="margin-bottom:15px">
+    <button class="primary" onclick="login()" style="width:100%">Entrar no Sistema</button>
+  `;
+}
+
+function formCadastro() {
+  document.getElementById("contaForm").innerHTML = `
+    <input id="nomeCad" placeholder="Nome Completo" style="margin-bottom:10px">
+    <input id="emailCad" placeholder="E-mail" style="margin-bottom:10px">
+    <input id="senhaCad" type="password" placeholder="Senha" style="margin-bottom:10px">
+    <label style="font-size:12px; font-weight:bold; color:var(--muted);">Selecione o Perfil do Usuário:</label>
+    <select id="tipoCad" style="margin-bottom:15px">
+      <option value="Adotante">Cliente / Adotante</option>
+      <option value="Administrador">Administrador do Sistema</option>
+    </select>
+    <button class="primary" onclick="cadastrar()" style="width:100%">Criar minha conta</button>
+  `;
+}
+
+function cadastrar() {
+  let n = document.getElementById("nomeCad").value;
+  let e = document.getElementById("emailCad").value;
+  let s = document.getElementById("senhaCad").value;
+  let t = document.getElementById("tipoCad").value;
+  if (!n || !e || !s) { alert("Preencha todos os campos."); return; }
+  
+  conta = { id: Date.now(), nome: n, email: e, tipo: t };
+  localStorage.setItem("ap_conta", JSON.stringify(conta));
+  fechar();
+  atualizarConta();
+  toast(`Conta de ${t} criada com sucesso!`);
+}
+
+function login() {
+  let e = document.getElementById("emailLogin").value;
+  if (!e) { alert("Digite seu e-mail."); return; }
+  conta = { id: 1, nome: e.split("@")[0], email: e, tipo: "Adotante" };
+  localStorage.setItem("ap_conta", JSON.stringify(conta));
+  fechar();
+  atualizarConta();
+  toast("Bem-vindo de volta ao Adote+!");
+}
+
+function atualizarConta() {
+  if (conta) {
+    document.getElementById("loginBtn").style.display = "none";
+    document.getElementById("userbar").style.display = "flex";
+    document.getElementById("avatar").textContent = conta.nome[0].toUpperCase();
+    
+    if (conta.tipo === 'Administrador') {
+      document.getElementById("adminBadge").style.display = "inline-block";
+      document.getElementById("adminArea").style.display = "block";
+    } else {
+      document.getElementById("adminBadge").style.display = "none";
+      document.getElementById("adminArea").style.display = "none";
+    }
+  } else {
+    document.getElementById("loginBtn").style.display = "block";
+    document.getElementById("userbar").style.display = "none";
+    document.getElementById("adminArea").style.display = "none";
+  }
+  render();
+}
+
+function abrirPainel() {
+  let meus = pedidos.filter(p => p.usuarioId === conta.id).map(p => `
+    <div style="border:1px solid var(--line); padding:12px; border-radius:10px; margin:8px 0">
+      Pet: <b>${p.animalNome}</b> — Status: <b style="color:var(--green)">${p.status}</b>
+    </div>
+  `).join("") || "<p class='muted'>Você ainda não enviou pedidos de adoção.</p>";
+
+  abrir(`
+    <h2>Olá, ${conta.nome}! 👋</h2>
+    <p class="muted">E-mail: ${conta.email} | Perfil: <b>${conta.tipo}</b></p>
+    <h3>❤️ Seus favoritos (${favoritos.length})</h3>
+    <h3>📋 Seus pedidos de adoção</h3>
+    ${meus}
+    <br>
+    <button class="danger" onclick="sair()">Sair da conta</button>
+  `);
+}
+
+function sair() {
+  conta = null;
+  localStorage.removeItem("ap_conta");
+  atualizarConta();
+  fechar();
+  toast("Sessão encerrada.");
+}
+
+function abrirFormAnimal() {
+  document.getElementById("adminConteudo").innerHTML = `
+    <h3 style="margin-top:0">Publicar Novo Pet no Catálogo</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+      <input id="aNome" placeholder="Nome do Animal">
+      <select id="aEsp">
+        <option>Cão</option><option>Gato</option><option>Cavalo</option>
+        <option>Tartaruga</option><option>Coelho</option><option>Ave</option>
+      </select>
+      <input id="aRaca" placeholder="Raça">
+      <input id="aIdade" placeholder="Idade (ex: 2 anos)">
+      <select id="aPorte"><option>Pequeno</option><option>Médio</option><option>Grande</option></select>
+      <select id="aSexo"><option>Macho</option><option>Fêmea</option></select>
+      <input id="aCidade" placeholder="Cidade">
+      <input id="aOng" placeholder="ONG Responsável">
+    </div>
+    <input id="aImg" placeholder="URL da Foto do Pet" style="margin-top:10px">
+    <br><br>
+    <button class="primary" onclick="salvarAnimal()">Salvar e Publicar</button>
+  `;
+}
+
+function salvarAnimal() {
+  const novo = {
+    id: animais.length + 1,
+    nome: document.getElementById("aNome").value || "Sem nome",
+    esp: document.getElementById("aEsp").value,
+    raca: document.getElementById("aRaca").value || "SRD",
+    idade: 1,
+    txt: document.getElementById("aIdade").value || "1 ano",
+    porte: document.getElementById("aPorte").value,
+    sexo: document.getElementById("aSexo").value,
+    cidade: document.getElementById("aCidade").value || "Betim",
+    ong: document.getElementById("aOng").value || "Amigos de Quatro Patas",
+    img: document.getElementById("aImg").value || "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=900&q=85"
+  };
+  animais.unshift(novo);
+  toast("Novo animal cadastrado com sucesso!");
+  document.getElementById("adminConteudo").innerHTML = "";
+  render();
+}
+
+function deletarAnimal(id) {
+  if (confirm("Deseja remover este animal do catálogo publicamente?")) {
+    animais = animais.filter(a => a.id !== id);
+    toast("Animal removido!");
+    render();
+  }
+}
+
+function carregarPedidosAdmin() {
+  document.getElementById("adminConteudo").innerHTML = `
+    <h3 style="margin-top:0">Solicitações Recebidas dos Clientes</h3>
+    <table>
+      <tr>
+        <th>Adotante</th>
+        <th>Contato</th>
+        <th>Pet</th>
+        <th>Mensagem</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+      ${pedidos.map(p => `
+        <tr>
+          <td><b>${p.adotante}</b><br><small>${p.email}</small></td>
+          <td>${p.telefone}</td>
+          <td><b>${p.animalNome}</b></td>
+          <td>${p.mensagem}</td>
+          <td><b>${p.status}</b></td>
+          <td>
+            <button class="primary" style="padding:6px 10px; font-size:12px;" onclick="alterarStatusPedido(${p.id}, 'Aprovado')">Aprovar</button>
+            <button class="danger" style="padding:6px 10px; font-size:12px;" onclick="alterarStatusPedido(${p.id}, 'Rejeitado')">Rejeitar</button>
+          </td>
+        </tr>
+      `).join("") || "<tr><td colspan='6'>Nenhum pedido de adoção registrado ainda. Cadastre um perfil de cliente e solicite uma adoção para testar!</td></tr>"}
+    </table>
+  `;
+}
+
+function alterarStatusPedido(id, status) {
+  const ped = pedidos.find(p => p.id === id);
+  if (ped) ped.status = status;
+  localStorage.setItem("ap_pedidos", JSON.stringify(pedidos));
+  carregarPedidosAdmin();
+  toast(`Status do pedido alterado para ${status}!`);
+}
+
+function verONG(i) {
+  let o = ongs[i];
+  let qtd = animais.filter(a => a.ong === o[0]).length;
+  abrir(`
+    <h2>${o[2]} ${o[0]}</h2>
+    <img src="${o[4]}" style="width:100%;height:230px;object-fit:cover;border-radius:15px">
+    <p>
+      <b>Local:</b> ${o[1]}<br>
+      <b>Atuação:</b> ${o[3]}<br>
+      <b>Animais cadastrados:</b> ${qtd}
+    </p>
+    <button class="primary" onclick="fechar();document.getElementById('animais').scrollIntoView()">Ver animais dessa ONG</button>
+  `);
+}
+
+function abrir(x) {
+  document.getElementById("modalContent").innerHTML = x;
+  document.getElementById("modal").classList.add("show");
+}
+
+function fechar() {
+  document.getElementById("modal").classList.remove("show");
+}
+
+function toast(t) {
+  const toastEl = document.getElementById("toast");
+  toastEl.textContent = t;
+  toastEl.style.display = "block";
+  setTimeout(() => toastEl.style.display = "none", 2600);
+}
+
+atualizarConta();
+renderONGs();
+
+function mostrarExtra(id){document.getElementById(id).classList.add("show");}
+function fecharExtra(id){document.getElementById(id).classList.remove("show");}
+function toggleFaq(btn){btn.parentElement.classList.toggle("open");}
+function atualizarChecklist(){
+  const boxes=[...document.querySelectorAll("#checklist input")];
+  const done=boxes.filter(b=>b.checked).length;
+  document.getElementById("checkProgress").style.width=((done/boxes.length)*100)+"%";
+  document.getElementById("checkText").textContent=done+" de "+boxes.length+" itens concluídos.";
+}
+function calcularCompatibilidade(){
+  const tempo=document.getElementById("quizTempo").value;
+  const casa=document.getElementById("quizCasa").value;
+  const perfil=document.getElementById("quizPerfil").value;
+  let result="🐱 Gatos podem ser uma boa opção para sua rotina, especialmente se você busca um perfil mais tranquilo.";
+  if(casa==="espaco" && tempo==="ativo") result="🐴 Cavalos podem combinar com uma rotina que tenha bastante espaço e tempo para cuidados e manejo.";
+  else if(tempo==="ativo" || perfil==="ativo") result="🐶 Cachorros podem combinar com você se houver tempo para interação, passeios e cuidados diários.";
+  else if(casa==="casa" && perfil==="calmo") result="🐢 Tartarugas podem ser uma possibilidade, desde que o habitat e os cuidados específicos da espécie sejam atendidos.";
+  document.getElementById("quizResult").textContent=result;
+  document.getElementById("quizResult").style.display="block";
+}
+
+</script>
+
+<div class="modal" id="statusAdocao">
+  <div class="box">
+    <button class="close" onclick="closeM('statusAdocao')">×</button>
+    <span class="tag">MINHAS SOLICITAÇÕES</span>
+    <h2>Acompanhamento de adoção</h2>
+    <div class="panel" style="margin-bottom:12px">
+      <b>🐶 Thor — Solicitação #AD1024</b>
+      <p class="muted">Status atual: <strong style="color:#2f6b4f">Em análise pela ONG</strong></p>
+      <p class="muted">✓ Solicitação enviada &nbsp; → &nbsp; ✓ Documentos recebidos &nbsp; → &nbsp; ⏳ Análise &nbsp; → &nbsp; Adoção</p>
+    </div>
+    <div class="panel">
+      <b>🐱 Luna — Solicitação #AD1018</b>
+      <p class="muted">Status atual: <strong style="color:#2f6b4f">Visita agendada</strong></p>
+      <p class="muted">Visita: próxima data disponível na ONG.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="apoioOng">
+  <div class="box">
+    <button class="close" onclick="closeM('apoioOng')">×</button>
+    <div class="form">
+      <span class="tag">APOIE UMA ONG</span>
+      <h2>Contribua com o cuidado dos animais</h2>
+      <p class="muted">Escolha uma forma de apoio para ajudar alimentação, medicamentos e cuidados dos animais.</p>
+      <label>ONG
+        <select>
+          <option>ONG Patas que Transformam</option>
+          <option>Instituto Amigos dos Animais</option>
+          <option>Projeto Novo Lar</option>
+        </select>
+      </label>
+      <label>Forma de apoio
+        <select>
+          <option>R$ 20,00</option>
+          <option>R$ 50,00</option>
+          <option>R$ 100,00</option>
+          <option>Outro valor</option>
+        </select>
+      </label>
+      <button class="btn" onclick="toast('Obrigado! Seu apoio foi registrado na demonstração.');closeM('apoioOng')">Apoiar ONG ❤️</button>
+    </div>
+  </div>
+</div>
+
+<div class="extra-modal" id="quizModal" onclick="if(event.target===this)fecharExtra('quizModal')">
+  <div class="extra-box">
+    <button class="extra-close" onclick="fecharExtra('quizModal')">×</button>
+    <div class="eyebrow">TESTE DE COMPATIBILIDADE</div>
+    <h2>Qual perfil combina com você?</h2>
+    <p class="muted">Responda 3 perguntas. O resultado é apenas uma orientação para a demonstração do site.</p>
+    <div class="form">
+      <label>Quanto tempo você tem por dia?
+        <select id="quizTempo"><option value="calmo">Pouco tempo</option><option value="medio">Algum tempo</option><option value="ativo">Bastante tempo</option></select>
+      </label>
+      <label>Onde o animal viverá?
+        <select id="quizCasa"><option value="apto">Apartamento</option><option value="casa">Casa</option><option value="espaco">Área ampla</option></select>
+      </label>
+      <label>Você procura um animal mais...
+        <select id="quizPerfil"><option value="calmo">Calmo</option><option value="carinhoso">Carinhoso</option><option value="ativo">Ativo</option></select>
+      </label>
+      <button class="btn primary" onclick="calcularCompatibilidade()">Ver resultado</button>
+      <div class="quiz-result" id="quizResult"></div>
+    </div>
+  </div>
+</div>
+
+<div class="extra-modal" id="checkModal" onclick="if(event.target===this)fecharExtra('checkModal')">
+  <div class="extra-box">
+    <button class="extra-close" onclick="fecharExtra('checkModal')">×</button>
+    <div class="eyebrow">CHECKLIST</div>
+    <h2>Estou preparado para adotar?</h2>
+    <p class="muted">Marque os itens que já estão organizados.</p>
+    <div class="checklist" id="checklist">
+      <label><input type="checkbox" onchange="atualizarChecklist()"> Tenho tempo para cuidar do animal.</label>
+      <label><input type="checkbox" onchange="atualizarChecklist()"> Minha casa permite uma adaptação segura.</label>
+      <label><input type="checkbox" onchange="atualizarChecklist()"> Consigo manter alimentação e cuidados.</label>
+      <label><input type="checkbox" onchange="atualizarChecklist()"> Todos da casa concordam com a adoção.</label>
+      <label><input type="checkbox" onchange="atualizarChecklist()"> Estou preparado para um compromisso de longo prazo.</label>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="checkProgress"></div></div>
+    <p id="checkText" class="muted">0 de 5 itens concluídos.</p>
+  </div>
+</div>
+
+<div class="extra-modal" id="faqModal" onclick="if(event.target===this)fecharExtra('faqModal')">
+  <div class="extra-box">
+    <button class="extra-close" onclick="fecharExtra('faqModal')">×</button>
+    <div class="eyebrow">CENTRAL DE DÚVIDAS</div>
+    <h2>Perguntas frequentes</h2>
+    <div class="faq"><button onclick="toggleFaq(this)">Como funciona a adoção? <span>＋</span></button><div class="faq-answer">Você encontra um animal, consulta o perfil, envia a solicitação e acompanha a análise feita pela ONG.</div></div>
+    <div class="faq"><button onclick="toggleFaq(this)">Posso favoritar um animal? <span>＋</span></button><div class="faq-answer">Sim. Os favoritos ajudam você a comparar opções e voltar aos perfis depois.</div></div>
+    <div class="faq"><button onclick="toggleFaq(this)">A ONG aprova automaticamente? <span>＋</span></button><div class="faq-answer">Não. A aprovação depende da análise da ONG e das condições da adoção.</div></div>
+    <div class="faq"><button onclick="toggleFaq(this)">O site atende quais animais? <span>＋</span></button><div class="faq-answer">O catálogo do projeto pode trabalhar com cães, gatos, cavalos, tartarugas, coelhos e aves.</div></div>
+  </div>
+</div>
+
+</body>
+</html>
